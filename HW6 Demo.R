@@ -20,10 +20,6 @@ for(i in 1:length(fama$Date)){
 } ##加上空字串，讓這個column都存string，才可以被time format讀
 fama$Date = as.Date(fama$Date, "%Y%m%d")
 
-#Read Price
-#data = read.csv("raw data/Investors/ALL_Prices.csv")
-#data$Date = as.Date(data$Date, "%Y-%m-%d")
-
 #Read S&P500 成分股return
 rSP500 = read.csv("raw data/rS&P500.csv")
 rSP500$Date = as.Date(rSP500$Date)
@@ -68,7 +64,6 @@ date_preserved == X$Date #check: 期間必須一樣
 #去掉時間標籤，以做矩陣相乘
 Y = as.matrix(Y[, 2])
 X = as.matrix(X[,2:length(X)])
-X = X[,2:length(X)]
 
 #######################################################
 # If we want to construct a portfolio from S&P500 stocks
@@ -84,7 +79,6 @@ plot(lasso.mod, xvar = 'lambda')
 plot(lasso.mod)
 
 #先用Cross Validation找出合適的lambda
-#ref: https://www.youtube.com/watch?v=ctmNq7FgbvI
 ##############################################################
 
 train_rows = sample(1:length(Y), 0.66*length(Y))
