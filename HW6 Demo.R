@@ -10,7 +10,7 @@ library(glmnet) #Lasso
 }
 
 #讀檔
-setwd("/Users/Andy 1/Google 雲端硬碟 (r08323004@g.ntu.edu.tw)/0 Semesters/108-2/1 三345 計量TA/2 電腦實習課/0 hadouts/L5/S&P500 Case in R")
+setwd("/Users/Andy 1/Google 雲端硬碟 (r08323004@g.ntu.edu.tw)/0 Semesters/108-2/1 三345 計量TA/2 電腦實習課/0 hadouts/L5/S&P500 Case in R/Lasso_Example_R")
 
 #Read Fama
 fama = read.csv("raw data/Investors/F-F_Research_Data_5_Factors_2x3.csv")
@@ -37,15 +37,15 @@ rm(SP100_sym)
 
 #Y是特定投資人的portfolio return
 #例如Stephen Mandel的Lone Pine Capital (LPC)
-CertainIvestor = "LPC"
-Y = rInvestors[c("Date", CertainIvestor)]
+CertainInvestor = "DJCO"
+Y = rInvestors[c("Date", CertainInvestor)]
 Y = na.omit(Y)
 
 #X是S&P500成分股的各期Return，根據Y有資料的期間來決定期間
 X = rSP500[rSP500$Date>=min(Y$Date) & rSP500$Date<=max(Y$Date),]
 
 #或：X是S&P100成分股的各期Return，根據Y有資料的期間來決定期間
-#X = rSP100[rSP100$Date>=min(Y$Date) & rSP100$Date<=max(Y$Date),]
+X = rSP100[rSP100$Date>=min(Y$Date) & rSP100$Date<=max(Y$Date),]
 
 #如果在Y的期間內，X包含na，就drop那該欄
 col_keep = c()
@@ -122,7 +122,7 @@ Test_table = drop(Test_table[c("Date", "Rp_star")])
 #對齊特定投資人所投資的時間
 Test_table = merge(fama, Test_table, by = "Date", all = T) #併到fama table
 #加入特定投資人的portfolio return
-Test_table = merge(Test_table, rInvestors[c("Date", CertainIvestor)], by = "Date", all = T) #併到fama table
+Test_table = merge(Test_table, rInvestors[c("Date", CertainInvestor)], by = "Date", all = T) #併到fama table
 
 # Distribution of Portfolio Return
 hist(na.omit(Test_table$Rp_star), breaks = 50) #全部期間的return
@@ -144,13 +144,13 @@ summary(reg3)
 ################################################################
 # Compare Portfolio Return
 mean(na.omit(Test_table$Rp_star)); var(na.omit(Test_table$Rp_star))
-mean(na.omit(Test_table[,CertainIvestor])); var(na.omit(Test_table[,CertainIvestor]))
+mean(na.omit(Test_table[,CertainInvestor])); var(na.omit(Test_table[,CertainInvestor]))
 
 #投組單位價格價格折線圖
 par(mfrow = c(2,2))
 #$1 #無槓桿
-Rp_star_ = Test_table$Rp_star[!is.na(Test_table$LPC)]
-Rp_star_date = Test_table$Date[!is.na(Test_table$LPC)]
+Rp_star_ = Test_table$Rp_star[!is.na(Test_table[,CertainInvestor])]
+Rp_star_date = Test_table$Date[!is.na(Test_table[,CertainInvestor])]
 price = 1
 accum_price = c()
 for(i in Rp_star_){
@@ -161,8 +161,8 @@ plot(Rp_star_date, accum_price, type = 'l', xlab = "year", ylab = "Dollars (init
      main = "Performance of Self-Constructed Portfolio")
 
 #With Leverage
-Rp_star_ = Test_table$Rp_star[!is.na(Test_table$LPC)]
-Rp_star_date = Test_table$Date[!is.na(Test_table$LPC)]
+Rp_star_ = Test_table$Rp_star[!is.na(Test_table[,CertainInvestor])]
+Rp_star_date = Test_table$Date[!is.na(Test_table[,CertainInvestor])]
 price = 1
 accum_price = c()
 for(i in Rp_star_){
@@ -173,7 +173,7 @@ plot(Rp_star_date, accum_price, type = 'l', xlab = "year", ylab = "Dollars (init
      main = "Performance of Self-Constructed Portfolio")
 
 ##compared to Mandell
-rInvestor_ = rInvestors["BRK"][rInvestors$Date>=min(Rp_star_date) & rInvestors$Date<=max(Rp_star_date),]
+rInvestor_ = rInvestors[CertainInvestor][rInvestors$Date>=min(Rp_star_date) & rInvestors$Date<=max(Rp_star_date),]
 rInvestor__date = rInvestors$Date[rInvestors$Date>=min(Rp_star_date) & rInvestors$Date<=max(Rp_star_date)]
 
 rInvestor__date = rInvestor__date[!is.na(rInvestor_)]
