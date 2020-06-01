@@ -186,7 +186,7 @@ for(i in rInvestor_){
   accum_price_rInvestor = cbind(accum_price_rInvestor, price)
 }
 plot(rInvestor__date, accum_price_rInvestor, type = 'l', xlab = "year", ylab = "Dollars (initial value = $1)",
-     main = "Performance of Mandell")
+     main = "Performance of "+CertainInvestor)
 
 ##compared to S&P500
 #同樣的期間
